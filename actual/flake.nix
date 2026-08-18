@@ -7,13 +7,19 @@
       nixpkgs.lib.genAttrs nixpkgs.lib.systems.flakeExposed
       (system: function nixpkgs.legacyPackages.${system});
   in {
-    devShells = forAllSystems (pkgs: {
+    devShells = forAllSystems (pkgs: let
+      python = pkgs.python3.withPackages (ps: [ps.setuptools]);
+    in {
       default = pkgs.mkShell {
-        packages = with pkgs; [
-          nodejs_22
-          corepack
-          sqlite
+        packages = [
+          pkgs.nodejs_22
+          pkgs.sqlite
+          python
+          (pkgs.writeShellScriptBin "yarn" ''
+            exec ${pkgs.nodejs_22}/bin/corepack yarn "$@"
+          '')
         ];
+        npm_config_python = "${python}/bin/python";
       };
     });
   };
