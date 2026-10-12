@@ -33,7 +33,9 @@
           go_1_26
           gnumake
           jdk17
+          lsof
           nodejs_22
+          postgresql
           sqlc
         ];
 
